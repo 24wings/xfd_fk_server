@@ -37,6 +37,21 @@ public class User {
     @Column(nullable = true)
     private Integer creatorId;
     private String roleIds;
+    private Boolean isSystem;
+
+    /**
+     * @return the isSystem
+     */
+    public Boolean getIsSystem() {
+        return isSystem;
+    }
+
+    /**
+     * @param isSystem the isSystem to set
+     */
+    public void setIsSystem(Boolean isSystem) {
+        this.isSystem = isSystem;
+    }
 
     /**
      * @return the createTime

@@ -21,6 +21,21 @@ public class Org implements Serializable {
     private Integer creatorId;
     private String creator;
     private Date createTime;
+    private Boolean isSystem = false;
+
+    /**
+     * @return the isSystem
+     */
+    public Boolean getIsSystem() {
+        return isSystem;
+    }
+
+    /**
+     * @param isSystem the isSystem to set
+     */
+    public void setIsSystem(Boolean isSystem) {
+        this.isSystem = isSystem;
+    }
 
     /**
      * @return the createTime

@@ -102,11 +102,14 @@ public class MemberService {
             for (int j = 0; j < groups.size(); j++) {
                 if (groups.get(j).getId() == member.getGroupId()) {
                     monthMoney = groups.get(j).getMonthMoney();
+                    if (monthMoney.compareTo(new BigDecimal(0)) == 0) {
+                        break;
+                    }
                 }
             }
 
-            BigDecimal debtMoney = monthMoney;
-            Order clearOrder = this.createClearOrder(member, debtMoney, actorName);
+            // BigDecimal debtMoney = monthMoney;
+            Order clearOrder = this.createClearOrder(member, new BigDecimal(0).subtract(member.getAmount()), actorName);
             this.stqService.save(clearOrder);
             member.setAmount(new BigDecimal(0));
             BigDecimal rechargeMoney = monthMoney.subtract(member.getAmount());

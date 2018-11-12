@@ -24,6 +24,21 @@ public class Menu implements Serializable {
     private Integer creatorId;
     private Integer config;
     private Integer menuCode;
+    private Boolean isSystem;
+
+    /**
+     * @return the isSystem
+     */
+    public Boolean getIsSystem() {
+        return isSystem;
+    }
+
+    /**
+     * @param isSystem the isSystem to set
+     */
+    public void setIsSystem(Boolean isSystem) {
+        this.isSystem = isSystem;
+    }
 
     /**
      * @return the config

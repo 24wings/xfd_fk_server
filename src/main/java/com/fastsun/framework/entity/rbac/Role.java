@@ -27,6 +27,21 @@ public class Role implements Serializable {
     private String menuIds;
     @Column(nullable = true)
     private Integer orgId;
+    private Boolean isSystem;
+
+    /**
+     * @return the isSystem
+     */
+    public Boolean getIsSystem() {
+        return isSystem;
+    }
+
+    /**
+     * @param isSystem the isSystem to set
+     */
+    public void setIsSystem(Boolean isSystem) {
+        this.isSystem = isSystem;
+    }
     // private List<Menu> menus;
 
     /**
