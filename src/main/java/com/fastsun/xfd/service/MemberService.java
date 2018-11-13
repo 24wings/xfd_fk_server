@@ -42,6 +42,8 @@ public class MemberService {
 
     @Autowired
     private NoService noService;
+    @Autowired
+    private MemberGroupJpa memberGroupJpa;
 
     public boolean memberCreate(Member member) {
         String mobile = member.getMobile();
@@ -98,14 +100,24 @@ public class MemberService {
         List<Member> members = memberJpa.findByMemberStatusEquals(MemberStatusEnum.Enable);
         for (int i = 0; i < members.size(); i++) {
             Member member = members.get(i);
+            Boolean isBreak = false;
             BigDecimal monthMoney = new BigDecimal(0);
             for (int j = 0; j < groups.size(); j++) {
                 if (groups.get(j).getId() == member.getGroupId()) {
                     monthMoney = groups.get(j).getMonthMoney();
                     if (monthMoney.compareTo(new BigDecimal(0)) == 0) {
-                        break;
+                        isBreak = true;
+                        System.out.println("=================================" + "====================");
+                    } else {
+                        isBreak = false;
                     }
                 }
+            }
+            if (isBreak) {
+                continue;
+            }
+            if (monthMoney.compareTo(new BigDecimal(0)) == 0) {
+                System.out.println("===================stop" + "========");
             }
 
             // BigDecimal debtMoney = monthMoney;
@@ -126,7 +138,7 @@ public class MemberService {
     }
 
     /** 创建充值订单 */
-    private Order createRechargeOrder(Member member, BigDecimal amount, String actorName) {
+    public Order createRechargeOrder(Member member, BigDecimal amount, String actorName) {
         Order order = new Order();
         order.setAmount(amount);
         order.setBuyMerchCode(member.getCode());
@@ -144,7 +156,7 @@ public class MemberService {
     }
 
     /** 创建清零订单 */
-    private Order createClearOrder(Member member, BigDecimal amount, String actorName) {
+    public Order createClearOrder(Member member, BigDecimal amount, String actorName) {
         Order order = new Order();
         order.setOperatorName(actorName);
         order.setBuyMerchCode(member.getCode());
@@ -163,7 +175,7 @@ public class MemberService {
     }
 
     /** 创建重置记录 */
-    private ResetRecord createResetRecord() {
+    public ResetRecord createResetRecord() {
 
         return null;
     }

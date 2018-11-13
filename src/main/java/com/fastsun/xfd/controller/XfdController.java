@@ -15,6 +15,9 @@ import com.fastsun.framework.entity.rbac.Role;
 import com.fastsun.framework.entity.rbac.User;
 import com.fastsun.framework.service.STQService;
 import com.fastsun.xfd.entity.Member;
+import com.fastsun.xfd.entity.MemberGroup;
+import com.fastsun.xfd.service.MemberJpa;
+import com.fastsun.xfd.service.MemberGroupJpa;
 import com.fastsun.xfd.service.MemberService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +35,10 @@ public class XfdController {
     protected EntityManager entityManager;
     @Autowired
     MemberService memberService;
+    @Autowired
+    MemberJpa memberJpa;
+    @Autowired
+    MemberGroupJpa memberGroupJpa;
 
     @PostMapping("/xfd/user/login")
     public Res login(@RequestBody LoginBean loginBean) {
@@ -71,14 +78,44 @@ public class XfdController {
 
     }
 
+    @PostMapping("/xfd_fk/reset")
+    public Res reset(@RequestBody Member member, @RequestParam String actorName) {
+        MemberGroup group = memberGroupJpa.findById(member.getGroupId());
+        if (group.getMonthMoney().compareTo(new BigDecimal(0)) == 0) {
+            return Res.error(400, "每月限额为0不允许重置");
+        } else {
+            this.memberService.createClearOrder(member, member.getAmount(), actorName);
+            this.memberService.createRechargeOrder(member, group.getMonthMoney(), actorName);
+            member.setAmount(group.getMonthMoney());
+            this.memberJpa.save(member);
+            return Res.success();
+        }
+
+    }
+
     @PostMapping("/xfd_fk/recharge")
     public Res recharge(@RequestParam BigDecimal amount, @RequestBody Member member, @RequestParam String actorName) {
+        Member dbMember = memberJpa.findById(member.getId());
 
-        Member newmember = memberService.recharge(member, amount, actorName);
-        if (newmember != null) {
-            return Res.success().put("member", newmember);
+        if (dbMember != null) {
+            MemberGroup group = memberGroupJpa.findById(dbMember.getGroupId());
+            if (group != null) {
+                // 如果充值金额大于 月额,返回禁止错误
+                if (group.getMonthMoney().compareTo(amount) < 0
+                        && group.getMonthMoney().compareTo(new BigDecimal(0)) != 0) {
+                    return Res.error(400, "充值金额不得大于会员每月金额");
+                }
+                Member newmember = memberService.recharge(dbMember, amount, actorName);
+                if (newmember != null) {
+                    return Res.success().put("member", newmember);
+                }
+                return Res.error(400, "充值失败！");
+            } else {
+                return Res.error(400, "会员分组不存在");
+            }
+        } else {
+            return Res.error(400, "不存在");
         }
-        return Res.error(400, "充值失败！");
     }
 
     @PostMapping("/xfd_fk/recharge-all")
