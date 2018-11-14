@@ -19,6 +19,7 @@ import com.fastsun.xfd.entity.MemberGroup;
 import com.fastsun.xfd.service.MemberJpa;
 import com.fastsun.xfd.service.MemberGroupJpa;
 import com.fastsun.xfd.service.MemberService;
+import com.fastsun.xfd.service.UserJpa;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,6 +40,8 @@ public class XfdController {
     MemberJpa memberJpa;
     @Autowired
     MemberGroupJpa memberGroupJpa;
+    @Autowired
+    UserJpa userJpa;
 
     @PostMapping("/xfd/user/login")
     public Res login(@RequestBody LoginBean loginBean) {
@@ -98,21 +101,9 @@ public class XfdController {
         Member dbMember = memberJpa.findById(member.getId());
 
         if (dbMember != null) {
-            MemberGroup group = memberGroupJpa.findById(dbMember.getGroupId());
-            if (group != null) {
-                // 如果充值金额大于 月额,返回禁止错误
-                if (group.getMonthMoney().compareTo(amount) < 0
-                        && group.getMonthMoney().compareTo(new BigDecimal(0)) != 0) {
-                    return Res.error(400, "充值金额不得大于会员每月金额");
-                }
-                Member newmember = memberService.recharge(dbMember, amount, actorName);
-                if (newmember != null) {
-                    return Res.success().put("member", newmember);
-                }
-                return Res.error(400, "充值失败！");
-            } else {
-                return Res.error(400, "会员分组不存在");
-            }
+            dbMember.setAmount(dbMember.getAmount().add(amount));
+            memberJpa.save(dbMember);
+            return Res.success();
         } else {
             return Res.error(400, "不存在");
         }
@@ -128,5 +119,19 @@ public class XfdController {
     public Res orderSummary(String className, @RequestBody List<Summary> summarys) throws ClassNotFoundException {
         List list = this.stq.summary(summarys, Class.forName(className));
         return Res.success().put("ok", list);
+    }
+
+    @PostMapping("/xfd_fk/user/modify")
+    public Res modifyUserInfo(@RequestBody User user) {
+        User dbUser = userJpa.findById(user.getId());
+        if (dbUser != null) {
+            dbUser.setName(user.getName());
+            dbUser.setPassword(user.getPassword());
+            userJpa.save(dbUser);
+            return Res.success();
+        } else {
+            return Res.error(400, "找不到用户");
+        }
+
     }
 }
