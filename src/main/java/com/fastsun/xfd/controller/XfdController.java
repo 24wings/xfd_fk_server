@@ -66,20 +66,12 @@ public class XfdController {
     public Res memberCreate(@RequestBody Member member) {
         boolean flag = memberService.memberCreate(member);
         if (!flag) {
-            return Res.error(400, "卡号已经注册");
+            return Res.error(400, "卡号或手机号已经注册");
         }
         return Res.success();
     }
 
-    @PostMapping("/xfd_fk/disabledCard")
-    public Res disabledCard(@RequestBody Member member) {
-        boolean flag = memberService.disabledCard(member);
-        if (!flag) {
-            return Res.error(400, "该卡已被禁用！");
-        }
-        return Res.success();
-
-    }
+   
 
     @PostMapping("/xfd_fk/reset")
     public Res reset(@RequestBody Member member, @RequestParam String actorName) {
@@ -101,8 +93,9 @@ public class XfdController {
         Member dbMember = memberJpa.findById(member.getId());
 
         if (dbMember != null) {
-            dbMember.setAmount(dbMember.getAmount().add(amount));
-            memberJpa.save(dbMember);
+            memberService.recharge(member, amount, actorName);
+            // dbMember.setAmount(dbMember.getAmount().add(amount));
+            // memberJpa.save(dbMember);
             return Res.success();
         } else {
             return Res.error(400, "不存在");

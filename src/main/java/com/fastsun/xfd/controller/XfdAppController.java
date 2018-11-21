@@ -4,17 +4,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-// import java.math.BigDecimal;
-// import java.util.ArrayList;
-// import java.util.List;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-
 import com.fastsun.framework.bean.*;
 import com.fastsun.framework.bean.http.*;
-// import com.fastsun.framework.entity.rbac.Menu;
-// import com.fastsun.framework.entity.rbac.Role;
 import com.fastsun.framework.entity.rbac.User;
 import com.fastsun.framework.service.NoService;
 import com.fastsun.framework.service.STQService;
@@ -22,7 +15,6 @@ import com.fastsun.xfd.bean.AppMember;
 import com.fastsun.xfd.bean.CardRequest;
 import com.fastsun.xfd.bean.RequestOrder;
 import com.fastsun.xfd.entity.Member;
-// import com.fastsun.xfd.entity.Member;
 import com.fastsun.xfd.entity.Order;
 import com.fastsun.xfd.entity.enums.OrderType;
 import com.fastsun.xfd.service.MemberJpa;
@@ -34,7 +26,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-// import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController

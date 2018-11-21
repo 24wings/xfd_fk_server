@@ -14,7 +14,6 @@ import com.fastsun.Q;
 import com.fastsun.framework.bean.http.QueryParam;
 import com.fastsun.framework.service.NoService;
 import com.fastsun.framework.service.STQService;
-import com.fastsun.xfd.entity.Card;
 import com.fastsun.xfd.entity.Member;
 import com.fastsun.xfd.entity.MemberGroup;
 import com.fastsun.xfd.entity.Order;
@@ -48,7 +47,7 @@ public class MemberService {
     public boolean memberCreate(Member member) {
         String mobile = member.getMobile();
         Member memberExisit = this.stqService.findOne(Q.one().$eq("mobile", mobile), Member.class);
-        Card cardExisit = this.stqService.findOne(Q.one().$eq("cardNo", member.getMealCardNo()), Card.class);
+        Member cardExisit = this.stqService.findOne(Q.one().$eq("mealCardNo", member.getMealCardNo()), Member.class);
         if (memberExisit != null) {
             return false;
         } else {
@@ -58,36 +57,17 @@ public class MemberService {
                 String memberCode = String.format("%05d", this.noService.getNo("memberCode"));
                 member.setCode(memberCode);
                 this.stqService.save(member);
-                Card card = new Card();
-                card.setCardNo(member.getMealCardNo());
-                card.setCardStatus(CardStatusEnum.Enable);
-                card.setMerchNo(memberCode);
-                this.stqService.save(card);
                 return true;
             }
         }
 
     }
 
-    public boolean disabledCard(Member member) {
-        Card card = this.stqService.findOne(
-                Q.one().$eq("merchNo", member.getCode()).$eq("cardStatus", CardStatusEnum.Enable.toString()),
-                Card.class);
-        if (card != null) {
-            card.setCardStatus(CardStatusEnum.Disabled);
-            this.stqService.save(card);
-            return true;
-        }
-        return false;
-    }
-
     public Member recharge(Member member, BigDecimal amount, String actorName) {
         if (member != null) {
-            Order clearOrder = this.createClearOrder(member, new BigDecimal(0).subtract(member.getAmount()), actorName);
-            Order rechargeOrder = this.createRechargeOrder(member, amount, actorName);
-            this.stqService.save(clearOrder);
+            Order rechargeOrder = this.createRechargeSingleOrder(member, amount, actorName);
             this.stqService.save(rechargeOrder);
-            member.setAmount(amount);
+            member.setAmount(member.getAmount().add(amount));
             this.stqService.save(member);
             return member;
         }
@@ -137,6 +117,23 @@ public class MemberService {
         return true;
     }
 
+    public Order createRechargeSingleOrder(Member member, BigDecimal amount, String actorName) {
+        Order order = new Order();
+        order.setAmount(amount);
+        order.setBuyMerchCode(member.getCode());
+        order.setBuyMerchName(member.getName());
+        String orderNo = String.format("%5d", this.noService.getNo("orderNo"));
+        order.setOrderNo(orderNo);
+        order.setCardNo(member.getMealCardNo());
+        order.setBeforeAmount(member.getAmount());
+        order.setAfterAmount(member.getAmount().add(amount));
+        order.setStatus(OrderStatusEnum.CONFIRMED);
+        order.setRemark(member.getRemark());
+        order.setOrderType(OrderType.RECHARGE);
+        order.setOperatorName(actorName);
+        return order;
+    }
+
     /** 创建充值订单 */
     public Order createRechargeOrder(Member member, BigDecimal amount, String actorName) {
         Order order = new Order();
@@ -147,7 +144,7 @@ public class MemberService {
         order.setOrderNo(orderNo);
         order.setCardNo(member.getMealCardNo());
         order.setBeforeAmount(member.getAmount());
-        order.setAfterAmount(amount);
+        order.setAfterAmount(member.getAmount());
         order.setStatus(OrderStatusEnum.CONFIRMED);
         order.setRemark(member.getRemark());
         order.setOrderType(OrderType.RECHARGE);

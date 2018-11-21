@@ -30,10 +30,25 @@ public class Member {
     private Date createTime = new Date();
     private String remark;
     private String mealCardNo;
+    // private String ICSN;
     private MemberStatusEnum memberStatus = MemberStatusEnum.Enable;
     private Integer groupId;
     @OneToOne()
     private Org org;
+
+    // /**
+    // * @return the iCSN
+    // */
+    // public String getICSN() {
+    // return ICSN;
+    // }
+
+    // /**
+    // * @param iCSN the iCSN to set
+    // */
+    // public void setICSN(String iCSN) {
+    // ICSN = iCSN;
+    // }
 
     /**
      * @return the groupId

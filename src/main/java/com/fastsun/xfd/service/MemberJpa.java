@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 public interface MemberJpa extends CrudRepository<Member, Long> {
     Member findByMealCardNo(String mealCardNo);
 
+    // Member findByMealCardNoAndICSN(String mealCardNo);
+
     Member findById(Integer id);
 
     List<Member> findByMemberStatusEquals(MemberStatusEnum status);
