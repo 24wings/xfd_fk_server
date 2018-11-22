@@ -16,5 +16,7 @@ public interface MemberJpa extends CrudRepository<Member, Long> {
 
     Member findById(Integer id);
 
+    List<Member> findAll();
+
     List<Member> findByMemberStatusEquals(MemberStatusEnum status);
 }

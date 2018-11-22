@@ -2,6 +2,7 @@ package com.fastsun.xfd.controller;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -14,14 +15,17 @@ import com.fastsun.framework.entity.rbac.Menu;
 import com.fastsun.framework.entity.rbac.Role;
 import com.fastsun.framework.entity.rbac.User;
 import com.fastsun.framework.service.STQService;
+import com.fastsun.xfd.entity.DailyStatistics;
 import com.fastsun.xfd.entity.Member;
 import com.fastsun.xfd.entity.MemberGroup;
 import com.fastsun.xfd.service.MemberJpa;
+import com.fastsun.xfd.service.DailyStatisticsJpa;
 import com.fastsun.xfd.service.MemberGroupJpa;
 import com.fastsun.xfd.service.MemberService;
 import com.fastsun.xfd.service.UserJpa;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,6 +46,8 @@ public class XfdController {
     MemberGroupJpa memberGroupJpa;
     @Autowired
     UserJpa userJpa;
+    @Autowired()
+    DailyStatisticsJpa dailyStatisticsJpa;
 
     @PostMapping("/xfd/user/login")
     public Res login(@RequestBody LoginBean loginBean) {
@@ -70,8 +76,6 @@ public class XfdController {
         }
         return Res.success();
     }
-
-   
 
     @PostMapping("/xfd_fk/reset")
     public Res reset(@RequestBody Member member, @RequestParam String actorName) {
@@ -127,4 +131,18 @@ public class XfdController {
         }
 
     }
+
+    // @GetMapping("/xfd_fk/user/diary")
+    // public Res dailyAnalysis() {
+    // List<Member> members = memberJpa.findAll();
+    // members.forEach(member -> {
+    // System.out.println(member);
+    // DailyStatistics daily = new DailyStatistics();
+    // daily.setAccountAmount(member.getAmount());
+    // daily.setDate(new Date());
+    // daily.setMemberId(member.getId());
+    // dailyStatisticsJpa.save(daily);
+    // });
+    // return Res.success();
+    // }
 }
