@@ -1,5 +1,8 @@
 package com.fastsun.framework.service;
 
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.metadata.ClassMetadata;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +22,17 @@ import java.util.Map;
 public class STQService {
     @PersistenceContext
     protected EntityManager entityManager;
+
+    public static SessionFactory buildFactory() {
+        Configuration config = new Configuration();
+        return config.buildSessionFactory();
+    }
+
+    // public String[] getHqlMetadata() {
+    // ClassMetadata.
+    // ClassMetadata meta = this.buildFactory().getClassMetadata(Member.class);
+    // return meta.getPropertyNames();
+    // }
 
     public Paging findPageEntity(QueryParam queryParam, String className) throws ClassNotFoundException {
         Class clazz = Class.forName(className);

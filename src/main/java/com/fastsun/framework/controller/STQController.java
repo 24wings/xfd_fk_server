@@ -13,13 +13,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import net.sf.json.JSONObject;
 
-@RestController
+@RestController(value = "实体操作")
+@Api(tags = "实体操作", description = "实体的增删改查")
 public class STQController {
     @Autowired
     private STQService stq;
 
+    @ApiOperation(value = "实体查询")
     @PostMapping("/app/stq/query")
     public Res queryEntity(@RequestParam String className, @RequestBody QueryParam queryParam)
             throws ClassNotFoundException {
@@ -27,7 +32,7 @@ public class STQController {
         return Res.success().put("paging", paging);
     }
 
-    // @PostMapping("/app/stq/entity/update")
+    @ApiOperation(value = "实体更新")
     @PostMapping("/app/stq/entity/update")
     public Res dataUpdate(@RequestParam String className, @RequestBody JSONObject body) throws ClassNotFoundException {
         Object data = JSONObject.toBean(body, Class.forName(className));
@@ -36,6 +41,7 @@ public class STQController {
     }
 
     // @validate
+    @ApiOperation(value = "实体插入")
     @PostMapping("/app/stq/entity/insert")
     public Res dataInsert(@RequestParam String className, @RequestBody JSONObject dataItem)
             throws ClassNotFoundException {
@@ -49,6 +55,7 @@ public class STQController {
 
     }
 
+    @ApiOperation(value = "实体删除")
     @PostMapping("/app/stq/entity/delete")
     public Res entityDelete(String className, @RequestBody JSONObject dataItem) throws ClassNotFoundException {
         Object entity = JSONObject.toBean(dataItem, Class.forName(className));

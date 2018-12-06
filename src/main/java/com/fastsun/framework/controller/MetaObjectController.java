@@ -13,9 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import io.swagger.annotations.Api;
 import net.sf.json.JSONObject;
 
 @RestController
+@Api(tags = "元数据操作", description = "元数据增删改查")
 public class MetaObjectController {
     @Autowired
     private SqlEntityService sqlEntityService;
